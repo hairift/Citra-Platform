@@ -1,0 +1,151 @@
+╔══════════════════════════════════════════════════════════════════════════╗
+║  CITRA — PANDUAN CEPAT                                                   ║
+║  Platform Pelestarian Tari Topeng Cirebon (Deep Learning + Motion)       ║
+╚══════════════════════════════════════════════════════════════════════════╝
+
+────────────────────────────────────────────────────────────────────────────
+ KONFIGURASI DATABASE (PENTING)
+────────────────────────────────────────────────────────────────────────────
+Di komputer ini sudah ada service Windows "MySQL80" yang memakai port 3306,
+sehingga MySQL Laragon dipindah ke port 3307. Keduanya bisa jalan bersamaan.
+
+  MySQL Laragon (CITRA)  : 127.0.0.1 : 3307 : root : (tanpa password)
+  MySQL80 (service lain) : 127.0.0.1 : 3306
+  Database               : citra_db
+  phpMyAdmin             : http://localhost/phpmyadmin
+                           -> pilih server "Laragon MySQL (CITRA) :3307"
+
+File yang sudah dikonfigurasi:
+  C:\laragon\bin\mysql\mysql-8.0.30-winx64\my.ini      (port=3307)
+  C:\laragon\etc\apps\phpMyAdmin\config.inc.php        (2 server)
+  frontend\.env  dan  backend\.env                     (DB_PORT=3307)
+
+
+────────────────────────────────────────────────────────────────────────────
+ MENJALANKAN (2 TERMINAL)
+────────────────────────────────────────────────────────────────────────────
+
+  [1] Pastikan Laragon jalan  ->  klik "Start All"
+
+  [2] TERMINAL 1 — Laravel (UI)
+      cd frontend
+      php artisan serve
+      ->  http://localhost:8000
+
+  [3] TERMINAL 2 — Flask (AI)
+      cd backend
+      venv\Scripts\activate
+      python app.py
+      ->  http://localhost:5000
+
+  Keluar dari virtualenv:  deactivate
+
+  CATATAN: Mode Latihan tetap bisa dipakai walau Flask tidak jalan
+  (deteksi pose + penilaian sudut sendi berjalan di browser).
+  Flask menambahkan lapisan deep learning di atasnya.
+
+
+────────────────────────────────────────────────────────────────────────────
+ AKUN DEMO
+────────────────────────────────────────────────────────────────────────────
+  admin@citra.test  / admin12345    (admin — bisa unggah video maestro)
+  siti@citra.test   / password123   (Mahir  — 58 sesi)
+  ahmad@citra.test  / password123   (Mahir  — 42 sesi)
+  dewi@citra.test   / password123   (Mahir  — 35 sesi)
+  budi@citra.test   / password123   (Menengah — 21 sesi)
+  eko@citra.test    / password123   (Pemula — 9 sesi)
+
+
+────────────────────────────────────────────────────────────────────────────
+ INSTALASI DARI NOL
+────────────────────────────────────────────────────────────────────────────
+
+  # Frontend
+  cd frontend
+  composer install
+  php artisan key:generate          (kalau APP_KEY kosong)
+  php artisan migrate:fresh --seed
+  php artisan citra:sync-dataset --publish
+
+  # Backend
+  cd backend
+  python -m venv venv
+  venv\Scripts\activate
+  pip install -r requirements.txt
+
+  ALTERNATIF: impor langsung file SQL lewat phpMyAdmin
+    database\citra_db_full.sql   (skema + seluruh data demo)
+  Kalau pakai cara ini, migrate & seed tidak perlu dijalankan.
+
+
+────────────────────────────────────────────────────────────────────────────
+ PIPELINE DATASET AI
+────────────────────────────────────────────────────────────────────────────
+
+  Video maestro  ->  backend\maestro_data\raw\
+
+  # 1. Ekstrak titik sendi dari video (MediaPipe)
+  cd backend
+  venv\Scripts\activate
+  python build_dataset.py --sample-fps 6 --model-complexity 2 --publish-frames
+
+  # 2. Impor hasil ekstraksi ke database
+  cd frontend
+  php artisan citra:sync-dataset --publish
+
+  # 3. Latih model deep learning
+  cd backend
+  python train_models.py --karakter klana --clusters 8 --epochs 60
+
+  Hasil ekstraksi saat ini:
+    4 video Tari Topeng Klana
+    11.104 frame dianalisis
+    99,98% pose terdeteksi
+    634 segmen gerakan
+    560 frame beranotasi titik sendi
+
+
+────────────────────────────────────────────────────────────────────────────
+ STRUKTUR FILE PENTING
+────────────────────────────────────────────────────────────────────────────
+  frontend\config\citra.php          Sumber kebenaran: 5 karakter, 29 gerakan,
+                                     bobot skor, level, pencapaian
+  backend\ai\pose_utils.py           Geometri pose (train & runtime pakai ini)
+  backend\ai\evaluation_engine.py    Mesin penilaian per sesi
+  backend\ai\deep_models.py          Bi-LSTM, Autoencoder, Tempo CNN
+  backend\models\                    Model terlatih (.keras)
+  backend\maestro_data\raw\          Video asli (7,8 GB, tidak untuk web)
+  frontend\public\videos\maestro\    Video web 720p (~100 MB)
+  frontend\public\pose-frames\       Frame beranotasi titik sendi
+  database\*.sql                     Dump untuk phpMyAdmin
+
+
+────────────────────────────────────────────────────────────────────────────
+ MASALAH UMUM
+────────────────────────────────────────────────────────────────────────────
+  "SQLSTATE[HY000] [2002]"
+      MySQL Laragon belum jalan, atau DB_PORT salah.
+      Cek:  netstat -ano | findstr :3307
+
+  Pil status "AI nonaktif"
+      Server Flask belum dijalankan (terminal 2).
+
+  Kamera tidak bisa diakses
+      Browser hanya izinkan kamera di localhost / HTTPS.
+      Klik ikon kamera di address bar -> Izinkan.
+      Tutup Zoom / Teams / OBS yang memakai kamera.
+
+  Halaman /dataset 404
+      Pastikan TIDAK ada folder frontend\public\dataset.
+      Folder yang benar: frontend\public\pose-frames
+
+  Video maestro tidak muncul
+      cd frontend && php artisan citra:sync-dataset --publish
+
+  Reset total
+      cd frontend
+      php artisan migrate:fresh --seed
+      php artisan citra:sync-dataset --publish
+      php artisan optimize:clear
+
+  Dokumentasi lengkap ada di README.md
