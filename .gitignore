@@ -9,6 +9,11 @@ env/
 venv/
 ENV/
 
+# Environment files (sensitive)
+.env
+*.env
+!.env.example
+
 # Database
 *.db
 *.sqlite
@@ -23,6 +28,8 @@ ENV/
 .DS_Store
 Thumbs.db
 
-# Large frame files - excluding to reduce repo size
-**/frames/*.jpg
-**/frames/
+# Large files are now included in the repository
+# Note: Raw video files (backend/maestro_data/raw/*.mp4) are excluded due to GitHub file size limit (100MB)
+# Total size: ~7.7GB (C0186.MP4: 3GB, C0189.MP4: 3GB, others: ~850MB each)
+backend/maestro_data/raw/*.mp4
+backend/maestro_data/raw/*.MP4

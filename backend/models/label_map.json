@@ -1,0 +1,23 @@
+{
+  "labels": [
+    "gerakan_01",
+    "gerakan_02",
+    "gerakan_03",
+    "gerakan_04",
+    "gerakan_05",
+    "gerakan_06",
+    "gerakan_07",
+    "gerakan_08"
+  ],
+  "note": "Auto-discovered movement phases. Rename the values here to real gerakan names without retraining.",
+  "display_names": {
+    "gerakan_01": "Gerakan 01",
+    "gerakan_02": "Gerakan 02",
+    "gerakan_03": "Gerakan 03",
+    "gerakan_04": "Gerakan 04",
+    "gerakan_05": "Gerakan 05",
+    "gerakan_06": "Gerakan 06",
+    "gerakan_07": "Gerakan 07",
+    "gerakan_08": "Gerakan 08"
+  }
+}

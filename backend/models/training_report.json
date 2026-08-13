@@ -1,0 +1,54 @@
+{
+  "trained_at": "2026-08-02T20:47:20",
+  "karakter": "klana",
+  "sources": [
+    {
+      "slug": "klana_maestro_full_cam1",
+      "role": "maestro",
+      "frames": 2829
+    },
+    {
+      "slug": "klana_maestro_full_cam2",
+      "role": "maestro",
+      "frames": 2832
+    },
+    {
+      "slug": "klana_latihan_sesi1",
+      "role": "latihan",
+      "frames": 2746
+    },
+    {
+      "slug": "klana_latihan_sesi2",
+      "role": "latihan",
+      "frames": 2697
+    }
+  ],
+  "gerakan_classifier": {
+    "windows": 2755,
+    "classes": [
+      "gerakan_01",
+      "gerakan_02",
+      "gerakan_03",
+      "gerakan_04",
+      "gerakan_05",
+      "gerakan_06",
+      "gerakan_07",
+      "gerakan_08"
+    ],
+    "final_accuracy": 0.9555354118347168,
+    "final_val_accuracy": 0.6678766012191772
+  },
+  "pose_autoencoder": {
+    "windows": 1405,
+    "final_loss": 0.18520915508270264,
+    "final_val_loss": 0.3310258090496063,
+    "error_median": 0.18596069514751434,
+    "error_scale": 0.2645844325423241
+  },
+  "tempo_regressor": {
+    "windows": 2755,
+    "final_mae": 0.019425734877586365,
+    "final_val_mae": 0.07086821645498276,
+    "target_scale": 1.3894878983497612
+  }
+}
